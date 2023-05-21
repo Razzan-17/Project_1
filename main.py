@@ -12,7 +12,7 @@ def admin():
         if request.form.get('password') == PASSWORD:
             return 'Сегодня, всё время'
         else:
-            return abort(403)
+            return abort(404)
     elif request.method =='GET':
         return render_template('admin_auth.html')
     else:
