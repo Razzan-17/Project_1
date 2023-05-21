@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>My projects</title>
+</head>
+<body>
+<h3 style="text-align: center;"><a href="http://127.0.0.1:5000/">Страница резюме</a></h3>
+<h1 style="text-align: center;">My projects</h1>
+    {% for i in data %}
+    <div style="background: yellow;">
+        <h1>
+            {{ i[1] }}
+        </h1>
+        <br>
+        <p>{{ i[2] }}</p>
+        <p>{{ i[3] }}</p>
+    </div>
+    <br>
+    {% endfor %}
+
+</body>
+</html>
