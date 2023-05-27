@@ -9,3 +9,8 @@ class RegisterForm(Form):
                         validators.EqualTo('confirm', message='Пароли должны совпадать')
     ])
     confirm = PasswordField('Повторите пароль:')
+
+
+class Login(Form):
+    email = StringField('Email:', [validators.Length(min=6, max=35)])
+    password = PasswordField('Пароль:', [validators.Length(min=8, max=16)])

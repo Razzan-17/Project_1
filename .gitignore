@@ -1,3 +1,6 @@
 /venv
 /.idea
-/.__pycache__
+/__pycache__
+.gitignore
+testingg.py
+DB_static.py

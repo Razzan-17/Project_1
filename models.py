@@ -5,6 +5,7 @@ from app import db
 
 
 class User(db.Model):
+    __nametable__ = 'users'
     name = db.Column(db.String(30))
     email = db.Column(db.String(120), primary_key=True)
     password = db.Column(db.String())
@@ -21,10 +22,11 @@ class User(db.Model):
 
 
 class Product(db.Model):
+    __nametable__ = 'products'
     name = db.Column(db.String(30))
     description = db.Column(db.String(250))
     price = db.Column(db.Integer)
-    foto = db.Column(db.String(100))
+    photo_name = db.Column(db.String(50))
     uuid = db.Column(db.String(30), primery_key=True)
     basket = db.relationship('Basket', backref='product', lazy='dynamic')
     like = db.relationship('Like', backref='product', lazy='dynamic')
@@ -44,6 +46,7 @@ class Product(db.Model):
 
 
 class Basket(db.Model):
+    __nametable__ = 'baskets'
     users = db.Column(db.String(30), db.ForeignKey('user.email'), primary_key=True)
     products = db.Column(db.String(30), db.ForeignKey('product.uuid'), primary_key=True)
     count = db.Column(db.Integer)
@@ -55,6 +58,7 @@ class Basket(db.Model):
 
 
 class Like(db.Model):
+    __nametable__ = 'likes'
     users = db.Column(db.String(30), db.ForeignKey('user.email'), primary_key=True)
     products = db.Column(db.String(30), db.ForeignKey('product.uuid'), primary_key=True)
 
@@ -64,6 +68,7 @@ class Like(db.Model):
 
 
 class Comment(db.Model):
+    __nametable__ = 'comments'
     users = db.Column(db.String(30), db.ForeignKey('user.email'), primary_key=True)
     products = db.Column(db.String(30), db.ForeignKey('product.uuid'), primary_key=True)
     text = db.Column(db.String(250))
