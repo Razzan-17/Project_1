@@ -1,5 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from forms import LoginForm
+import models
 
 
 app = Flask(__name__)
@@ -12,16 +14,7 @@ db = SQLAlchemy(app=app)
 
 @app.route('/')
 def home():
-    test_dict = [{'name': '1.jpg', 'price': 520},
-         {'name': '2.jpg', 'price': 300},
-         {'name': '3.jpg', 'price': 780},
-         {'name': '4.jpg', 'price': 100},
-         {'name': '5.jpg', 'price': 620},
-         {'name': '6.jpg', 'price': 780},
-         {'name': '7.jpg', 'price': 723},
-         {'name': '8.jpg', 'price': 45},
-         {'name': '9.jpg', 'price': 400},]
-    return render_template('shop.html', data=test_dict)
+    return render_template('login.html')
 
 
 @app.route('/register')
@@ -29,14 +22,25 @@ def register():
     render_template('templates/register.html')
 
 
-@app.route('/login')
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    render_template('templates/login.html')
+    if request.method == 'POST':
+        form = request.form
+        email = form.get('email')
+        password = form.get('password')
+        print(email, password, sep='\n')
+        return '<h1>GGGGGG</h>'
+    else:
+        login_form = LoginForm()
+        return render_template('login.html', form=login_form)
 
 
 @app.route('/shop')
 def shop():
-    render_template('templates/shop.html', count=[1,1,1])
+    data = models.Product.query.order_by(models.Product.price).all()
+    for i in data:
+        print(i)
+    return render_template('shop.html', data=data)
 
 
 @app.route('/card/<uuid>')

@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, PasswordField, validators
+from wtforms import Form, StringField, EmailField, PasswordField, validators
 
 
 class RegisterForm(Form):
@@ -6,11 +6,13 @@ class RegisterForm(Form):
     email = StringField('Адрес e-mail:', [validators.Length(min=6, max=35)])
     password = PasswordField('Пароль:', [
                         validators.DataRequired(),
-                        validators.EqualTo('confirm', message='Пароли должны совпадать')
-    ])
+                        validators.EqualTo('confirm', message='Пароли должны совпадать')])
     confirm = PasswordField('Повторите пароль:')
 
 
-class Login(Form):
-    email = StringField('Email:', [validators.Length(min=6, max=35)])
-    password = PasswordField('Пароль:', [validators.Length(min=8, max=16)])
+class LoginForm(Form):
+    email = EmailField('email:', [validators.Length(min=6, max=35)])
+    password = PasswordField('password:', [validators.Length(min=8, max=16)])
+
+
+
