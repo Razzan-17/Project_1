@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+{% extends 'base.html' %}
+{% block center %}
 <body>
-<h1>CARD</h1>
+{% for value in data %}
+<div style="text-align: center;" class="card shadow-sm col">
+    <img src="{{ url_for('static', filename=value.photo_name) }}">
+    <div>
+    <h1>{{value.name}}</h1>
+    <h1>{{value.price}}$</h1>
+    <h4>{{value.description}}</h4>
+    </div>
+</div>
+{% endfor %}
 </body>
-</html>
+{% endblock %}
