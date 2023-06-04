@@ -1,13 +1,22 @@
 from flask import render_template, request, redirect, url_for, abort
 from datetime import datetime
 from hashlib import sha1
+
+from flask_login import login_user, login_required
+
 from forms import LoginForm, RegisterForm
-from __init__py import app, db
+from __init__py import app, db, lm
 from models import Product, User
+from UserLogin import UserLogin
 
 
 def hash_psw(psw: str):
     return sha1(bytes(psw, 'utf-8')).hexdigest()
+
+
+@lm.user_loader
+def load_user(user_email):
+    return UserLogin().fromDB(user_email)
 
 
 @app.route('/')
@@ -17,6 +26,7 @@ def shop():
 
 
 @app.route('/profile')
+@login_required
 def profile():
     return render_template('profile.html')
 
@@ -49,12 +59,15 @@ def login():
     if request.method == 'POST' and form.validate():
         email = request.form.get('email')
         password = request.form.get('password')
-        data = User.query.filter(User.email == email).first()
-        if data is None:
+        user = User.query.filter(User.email == email).first()
+        if user is None:
             return render_template('login.html', form=form, data=error_text)
         hash_psw1 = hash_psw(password)
-        if hash_psw1 != data.password:
+        if hash_psw1 != user.password:
             return render_template('login.html', form=form, data='Неверный пароль')
+        userlogin = UserLogin()
+        userlogin.create(user)
+        login_user(userlogin)
         return redirect(url_for('shop'))
     else:
         data = ''
