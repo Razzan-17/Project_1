@@ -33,7 +33,7 @@ class Product(db.Model):
 class Basket(db.Model):
     users = db.Column(db.String(30), db.ForeignKey('user.email'), primary_key=True)
     products = db.Column(db.String(30), db.ForeignKey('product.uuid'), primary_key=True)
-    count = db.Column(db.Integer, default=0)
+    count = db.Column(db.Integer, default=1)
 
 
 class Like(db.Model):

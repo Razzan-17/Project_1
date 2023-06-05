@@ -1,23 +1,17 @@
 from models import User
+from flask_login import UserMixin
 
 
-class UserLogin:
+class UserLogin(UserMixin):
     def fromDB(self, user_email):
-        self.__user = User.query.filter(User.email == user_email).first()
+        self._user = User.query.filter(User.email == user_email).first()
         return self
 
-    def create(self, user):
-        print(user)
-        self.__user = user
-
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
+    def create(self, user=None):
+        self._user = user
 
     def get_id(self):
-        return str(self.__user['email'])
+        return str(self._user.email)
+
+    def get_prof(self):
+        return self._user

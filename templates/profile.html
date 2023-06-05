@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block center %}
-<body>
-<h1>profile</h1>
+<body style="text-align: center;">
+<h1>Профиль:</h1>
+<h2>{{ current_user.get_prof().name }}</h2>
+<h3>{{ current_user.get_prof().email }}</h3>
+<h5>{{ current_user.get_prof().date }}</h5>
 </body>
 {% endblock %}

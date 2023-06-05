@@ -12,14 +12,15 @@
               <a href="/card/{{ value.uuid }}">
               <h4>{{ value.name }}</h4></a><h4>  {{ value.price }}$</h4>
               <p class="card-text"> {{ value.description }}</p>
+
+              {% if current_user.is_authenticated %}
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
-                  <button type="button" class="btn btn-sm btn-outline-secondary">♡</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">🛒</button>
-                  <button type="button" class="btn btn-sm btn-outline-secondary">✎</button>
+                  <button type="button" value="like" class="btn btn-sm btn-outline-secondary">♡   </button>
+                  <button type="button" value="basket" class="btn btn-sm btn-outline-secondary">🛒</button>
                 </div>
               </div>
-              <small class="text-body-secondary">Комментарии</small>
+              {% endif %}
             </div>
           </div>
         </div>

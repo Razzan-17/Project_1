@@ -2,11 +2,11 @@ from flask import render_template, request, redirect, url_for, abort
 from datetime import datetime
 from hashlib import sha1
 
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, logout_user
 
 from forms import LoginForm, RegisterForm
 from __init__py import app, db, lm
-from models import Product, User
+from models import Product, User, Basket
 from UserLogin import UserLogin
 
 
@@ -65,15 +65,23 @@ def login():
         hash_psw1 = hash_psw(password)
         if hash_psw1 != user.password:
             return render_template('login.html', form=form, data='Неверный пароль')
-        userlogin = UserLogin()
-        userlogin.create(user)
-        login_user(userlogin)
+        u_login = UserLogin()
+        u_login.create(user)
+        login_user(u_login)
         return redirect(url_for('shop'))
     else:
         data = ''
         if request.args.get('values') == 'True':
             data = 'Вы успешно зарегистрировались!'
         return render_template('login.html', form=form, data=data)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    print('функция выхода')
+    return redirect(url_for('shop'))
 
 
 @app.route('/card/<uuid>')
