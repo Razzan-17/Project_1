@@ -1,6 +1,6 @@
 /venv
 /.idea
 /__pycache__
+/instance
 .gitignore
 testingg.py
-DB_static.py

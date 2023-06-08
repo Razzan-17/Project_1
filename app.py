@@ -1,17 +1,14 @@
 from flask import render_template, request, redirect, url_for, abort
-from datetime import datetime
-from hashlib import sha1
-
-from flask_login import login_user, login_required, logout_user
-
-from forms import LoginForm, RegisterForm
-from __init__py import app, db, lm
-from models import Product, User, Basket
+from flask_login import login_user, login_required, logout_user, current_user
 from UserLogin import UserLogin
 
+from init import app, lm
+from app_func import hash_password
+from forms import LoginForm, RegisterForm
+from models import User
+from app_func import QueryDataBase
 
-def hash_psw(psw: str):
-    return sha1(bytes(psw, 'utf-8')).hexdigest()
+qdb = QueryDataBase()
 
 
 @lm.user_loader
@@ -21,14 +18,16 @@ def load_user(user_email):
 
 @app.route('/')
 def shop():
-    data = Product.query.limit(9).all()
-    return render_template('shop.html', data=data)
+    return render_template('shop.html',
+                           data=qdb.query_all())
 
 
 @app.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html')
+    email = current_user.get_prof().email
+    data, summ = qdb.query_profile(email)
+    return render_template('profile.html', basket=data, summ=summ)
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -36,20 +35,12 @@ def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
         form = request.form
-        name = form.get('name')
-        email = form.get('email')
-        psw1 = form.get('password')
-        psw2 = form.get('confirm')
-        if psw1 == psw2:
-            psw = hash_psw(psw1)
-            user = User(name=name, email=email, password=psw, date=datetime.utcnow().strftime('%d.%m.%Y'))
-            db.session.add(user)
-            db.session.commit()
+        psw = form.get('password')
+        if psw == form.get('confirm'):
+            qdb.create_user(psw, form)
             return redirect(url_for('login', values='True'))
-        else:
-            return abort(301)
     else:
-        return render_template('register.html', form=form, errors=form.errors)  # redirect(url_for('login'))
+        return render_template('register.html', form=form, errors=form.errors)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -62,8 +53,7 @@ def login():
         user = User.query.filter(User.email == email).first()
         if user is None:
             return render_template('login.html', form=form, data=error_text)
-        hash_psw1 = hash_psw(password)
-        if hash_psw1 != user.password:
+        if user.password != hash_password(password):
             return render_template('login.html', form=form, data='Неверный пароль')
         u_login = UserLogin()
         u_login.create(user)
@@ -80,14 +70,15 @@ def login():
 @login_required
 def logout():
     logout_user()
-    print('функция выхода')
     return redirect(url_for('shop'))
 
 
 @app.route('/card/<uuid>')
 def card_view(uuid):
-    data_db = Product.query.filter(Product.uuid == uuid).all()
-    return render_template('card.html', data=data_db)
+    data = qdb.query_product_card(uuid)
+    if data is None:
+        return abort(404)
+    return render_template('card.html', data=data)
 
 
 if __name__ == '__main__':

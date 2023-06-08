@@ -12,4 +12,3 @@ app.config["SQLALCHEMY_RECORD_QUERIES"] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///DB.db'
 db.init_app(app)
 lm.init_app(app)
-db.create_all()

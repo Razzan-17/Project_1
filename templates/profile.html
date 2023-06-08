@@ -5,5 +5,39 @@
 <h2>{{ current_user.get_prof().name }}</h2>
 <h3>{{ current_user.get_prof().email }}</h3>
 <h5>{{ current_user.get_prof().date }}</h5>
+<div>
+    <div>
+        <h1>Корзина</h1>
+        {% for product in basket %}
+        <div>
+            <h4>
+                {{ product.name }}
+            </h4>
+            <h2>
+                {{ product.price }}
+            </h2>
+            <br>
+        </div>
+        {% endfor %}
+        <h2>Общая сумма:</h2>
+        {% if summ %}
+        {% for sum in summ %}
+            <h3>
+                {{ sum }}
+            </h3>
+        {% endfor %}
+        {% else %}
+            <h3>
+                0
+            </h3>
+        {% endif %}
+    </div>
+    <div>
+        <h1>Любимые</h1>
+        <div>
+            Пусто
+        </div>
+    </div>
+</div>
 </body>
 {% endblock %}
