@@ -23,7 +23,11 @@
         {% if summ %}
         {% for sum in summ %}
             <h3>
+                {% if sum %}
                 {{ sum }}
+                {% else %}
+                0
+                {% endif %}
             </h3>
         {% endfor %}
         {% else %}

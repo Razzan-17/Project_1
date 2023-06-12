@@ -1,12 +1,12 @@
 from init import db
 
 
-class User(db.Model):
+class Buyer(db.Model):
     name = db.Column(db.String(30), nullable=False)
     email = db.Column(db.String(120), primary_key=True)
-    password = db.Column(db.String(24), nullable=False)
+    password = db.Column(db.String(50), nullable=False)
     date = db.Column(db.String(50), nullable=False)
-    basket = db.relationship('Basket', backref='user', lazy='dynamic')
+    basket = db.relationship('Basket', backref='buyer', lazy='dynamic')
 
     def __repr__(self):
         return self.name
@@ -26,6 +26,6 @@ class Product(db.Model):
 
 class Basket(db.Model):
     id = db.Column(db.Integer,autoincrement=True, primary_key=True)
-    users = db.Column(db.String(120), db.ForeignKey('user.email'))
+    users = db.Column(db.String(120), db.ForeignKey('buyer.email'))
     products = db.Column(db.String(90), db.ForeignKey('product.uuid'))
     count = db.Column(db.Integer, default=1)

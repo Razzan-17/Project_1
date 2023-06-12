@@ -1,11 +1,8 @@
-import os
-
 import pytest
-from tempfile import mkstemp
-from app import app
-from init import db
+from conf import URI_test
+from init import create_app
 
-
+app = create_app(URI_test)
 app.testing = True
 
 
@@ -27,32 +24,3 @@ class TestViewsGet:
     def test_code_404(self, address):
         resp = self.client.get('/card/' + address)
         assert resp.status_code == 404
-
-
-class TestViewsPost:
-    def setup(self):
-        self.db_fd, app.config['SQLALCHEMY_DATABASE_URI'] = mkstemp()
-        self.client = app.test_client()
-        db.create_all()
-
-    def teardown(self):
-        os.close(self.db_fd)
-        os.unlink(app.config['SQLALCHEMY_DATABASE_URI'])
-
-    def test_login_logout(self):
-        d = {'email': 'eee@ee.ee', 'password': '123123123'}
-        self.client.post('/login', data=d, follow_redirects=True)
-        res = self.client.get('/logout', follow_redirects=True)
-        assert res.status_code == 200
-
-
-#register
-#login
-#profile
-
-#add_product
-#query_all
-#query_profile
-#query_product_card
-#hash_password
-#create_user

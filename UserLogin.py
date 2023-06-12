@@ -1,10 +1,14 @@
-from models import User
+from models import Buyer
 from flask_login import UserMixin
 
 
 class UserLogin(UserMixin):
+    def __init__(self, *args):
+        self._user = None
+        super().__init__(*args)
+
     def fromDB(self, user_email):
-        self._user = User.query.filter(User.email == user_email).first()
+        self._user = Buyer.query.filter(Buyer.email == user_email).first()
         return self
 
     def create(self, user=None):

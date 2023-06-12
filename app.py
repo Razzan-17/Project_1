@@ -2,17 +2,17 @@ from flask import render_template, request, redirect, url_for, abort
 from flask_login import login_user, login_required, logout_user, current_user
 from UserLogin import UserLogin
 
-from init import app, lm
+from init import create_app, lm
 from app_func import hash_password
 from forms import LoginForm, RegisterForm
-from models import User
-from app_func import QueryDataBase
+from models import Buyer
+from app_func import QueryDataBase as qdb
 
-qdb = QueryDataBase()
+app = create_app()
 
 
 @lm.user_loader
-def load_user(user_email):
+def load_user(user_email: str):
     return UserLogin().fromDB(user_email)
 
 
@@ -50,7 +50,7 @@ def login():
     if request.method == 'POST' and form.validate():
         email = request.form.get('email')
         password = request.form.get('password')
-        user = User.query.filter(User.email == email).first()
+        user = Buyer.query.filter(Buyer.email == email).first()
         if user is None:
             return render_template('login.html', form=form, data=error_text)
         if user.password != hash_password(password):
@@ -74,7 +74,7 @@ def logout():
 
 
 @app.route('/card/<uuid>')
-def card_view(uuid):
+def card_view(uuid: str):
     data = qdb.query_product_card(uuid)
     if data is None:
         return abort(404)
@@ -83,7 +83,3 @@ def card_view(uuid):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
