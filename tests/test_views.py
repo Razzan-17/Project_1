@@ -1,13 +1,12 @@
 import pytest
 from conf import URI_test
-from init import create_app
-
-app = create_app(URI_test)
-app.testing = True
+from app import app
 
 
 class TestViewsGet:
     def setup(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = URI_test
+        app.testing = True
         self.client = app.test_client()
 
     @pytest.mark.parametrize('address', ['/', '/login', '/register'])

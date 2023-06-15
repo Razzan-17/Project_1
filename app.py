@@ -3,10 +3,9 @@ from flask_login import login_user, login_required, logout_user, current_user
 from UserLogin import UserLogin
 
 from init import create_app, lm
-from app_func import hash_password
+from app_func import hash_password, QueryDataBase as qdb
 from forms import LoginForm, RegisterForm
 from models import Buyer
-from app_func import QueryDataBase as qdb
 
 app = create_app()
 
@@ -35,24 +34,25 @@ def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
         form = request.form
-        psw = form.get('password')
-        if psw == form.get('confirm'):
-            qdb.create_user(psw, form)
-            return redirect(url_for('login', values='True'))
+        if not qdb.check_user(form):
+            psw = form.get('password')
+            if psw == form.get('confirm'):
+                qdb.create_user(psw, form)
+                return redirect(url_for('login', values='True'))
+        return render_template('register.html', form=form, errors={True: ['Такой email уже существует']})
     else:
         return render_template('register.html', form=form, errors=form.errors)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    error_text = 'Вы не зарегистрированы'
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         email = request.form.get('email')
         password = request.form.get('password')
         user = Buyer.query.filter(Buyer.email == email).first()
         if user is None:
-            return render_template('login.html', form=form, data=error_text)
+            return render_template('login.html', form=form, data='Вы не зарегистрированы')
         if user.password != hash_password(password):
             return render_template('login.html', form=form, data='Неверный пароль')
         u_login = UserLogin()
@@ -74,9 +74,9 @@ def logout():
 
 
 @app.route('/card/<uuid>')
-def card_view(uuid: str):
+def card_show(uuid: str):
     data = qdb.query_product_card(uuid)
-    if data is None:
+    if not data:
         return abort(404)
     return render_template('card.html', data=data)
 

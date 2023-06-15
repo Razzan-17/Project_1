@@ -59,6 +59,11 @@ class QueryDataBase:
         return data
 
     @staticmethod
+    def check_user(form):
+        '''Проверка существования email при регистрации'''
+        return Buyer.query.filter(Buyer.email == form['email']).first()
+
+    @staticmethod
     def create_user(psw: str, form):
         '''Создание нового пользователя'''
         hash_psw = hash_password(psw)

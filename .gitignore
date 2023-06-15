@@ -1,7 +1,7 @@
 /venv
 /.idea
 /tests/__pycache__
-/__pycache__
 /instance
+/tests/.pytest_cache
 .gitignore
 testingg.py

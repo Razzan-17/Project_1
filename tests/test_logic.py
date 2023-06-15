@@ -1,14 +1,18 @@
 import pytest
 
-from init import create_app
+from app import app
 from conf import URI_test
-from app_func import QueryDataBase as qdb
+from init import db
+from models import Buyer
+
 
 class TestViewsPost:
     def setup(self):
-        app = create_app(URI_test)
         app.testing = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = URI_test
         self.client = app.test_client()
+        Buyer.query.delete()
+        db.session.commit()
 
     def login(self, email: str, psw: str):
         return self.client.post('/login', data={
@@ -21,14 +25,19 @@ class TestViewsPost:
 
     def test_register(self):
         form = {'name': 'Test',
-                'email': 'test@test.ru'}
-        qdb.create_user('123123123', form)
-        response = self.login(form['email'], '123123123')
-        assert response.status_code == 200
+                'email': 'test@test.ru',
+                'password': '123123123',
+                'confirm': '123123123'}
+        response = self.client.post('/register', data=form, follow_redirects=True)
+        assert response.status_code == 200, 'Ошибка доступа к странице регистрации'
+        assert 'Вы успешно зарегистрировались!' in response.text, 'Ошибка редиректа при регистрации'
+        response = self.login(form['email'], form['password'])
+        assert response.status_code == 200, 'Ощибка авторизации после регистрации'
+        db.session.commit()
 
     @pytest.mark.parametrize('email', ['test1@test.ru', 'test@test', ''])
     def test_login_email(self, email):
-        response = self.login(email, '123123123')
+        response = self.login(email, '11111111')
         assert response.status_code == 200
         assert 'Вы не зарегистрированы' in response.text
 
