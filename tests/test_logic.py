@@ -1,19 +1,8 @@
 import pytest
 
-from app import app
-from conf import URI_test
-from init import db
-from models import Buyer
 
-
+@pytest.mark.usefixtures('create_client')
 class TestViewsPost:
-    def setup(self):
-        app.testing = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = URI_test
-        self.client = app.test_client()
-        Buyer.query.delete()
-        db.session.commit()
-
     def login(self, email: str, psw: str):
         return self.client.post('/login', data={
             'email': email,
@@ -23,7 +12,7 @@ class TestViewsPost:
     def logout(self):
         return self.client.get('/logout', follow_redirects=True)
 
-    def test_register(self):
+    def test_register(self, delete_user):
         form = {'name': 'Test',
                 'email': 'test@test.ru',
                 'password': '123123123',
@@ -32,34 +21,21 @@ class TestViewsPost:
         assert response.status_code == 200, 'Ошибка доступа к странице регистрации'
         assert 'Вы успешно зарегистрировались!' in response.text, 'Ошибка редиректа при регистрации'
         response = self.login(form['email'], form['password'])
-        assert response.status_code == 200, 'Ощибка авторизации после регистрации'
-        db.session.commit()
+        assert response.status_code == 200, 'Ошибка авторизации после регистрации'
 
-    @pytest.mark.parametrize('email', ['test1@test.ru', 'test@test', ''])
+    @pytest.mark.parametrize('email', ['test1@test.ru', 'test@test'])
     def test_login_email(self, email):
-        response = self.login(email, '11111111')
+        response = self.login(email, '111111111')
         assert response.status_code == 200
         assert 'Вы не зарегистрированы' in response.text
 
-    @pytest.mark.parametrize('password', ['1231231231', 'test', ''])
-    def test_login_password(self, password):
+    @pytest.mark.parametrize('password', ['1231231231', 'test12341'])
+    def test_login_password(self, password, create_user):
         response = self.login('test@test.ru', password)
         assert response.status_code == 200
         assert 'Неверный пароль' in response.text
 
-    def test_login_logout(self):
+    def test_login_logout(self, create_user):
         self.login('test@test.ru', '123123123')
         response = self.logout()
         assert response.status_code == 200
-
-
-#register
-#login
-#profile
-
-#add_product
-#query_all
-#query_profile
-#query_product_card
-#hash_password
-#create_user

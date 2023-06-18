@@ -34,11 +34,13 @@ def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
         form = request.form
-        if not qdb.check_user(form):
+        v = qdb.check_user(form)
+        if not v:
             psw = form.get('password')
             if psw == form.get('confirm'):
                 qdb.create_user(psw, form)
                 return redirect(url_for('login', values='True'))
+        print(v)
         return render_template('register.html', form=form, errors={True: ['Такой email уже существует']})
     else:
         return render_template('register.html', form=form, errors=form.errors)

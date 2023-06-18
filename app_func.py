@@ -77,5 +77,6 @@ class QueryDataBase:
 
 def hash_password(psw: str):
     '''Хеширование пароля'''
-    return sha1(bytes(psw, 'utf-8')).hexdigest()
+    if psw:
+        return sha1(bytes(str(psw), 'utf-8')).hexdigest()
 
